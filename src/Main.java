@@ -1,6 +1,25 @@
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Scanner;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.reflect.TypeToken;
+
+import javax.swing.text.FlowView;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+
+
 
 public class Main {
     public static Scanner input = new Scanner(System.in);
@@ -10,10 +29,12 @@ public class Main {
 
     public static void main(String[] args) {
         String userInput = "";
+        deserializeSimple();
         while (!userInput.equals("0")){
             printOptions();
             userInput = input.nextLine();
             if (userInput.equals("0")){
+                serializeSimple();
                 break;
             } else if (userInput.equals("1")) {
                 addTask(taskList);
@@ -73,5 +94,29 @@ public class Main {
     static void sortByPrio(){
         Collections.sort(taskList);
         System.out.println(taskList);
+    }
+    static void deserializeSimple(){
+        try (FileReader reader = new FileReader("data.json")){
+            JsonParser parker = new JsonParser();
+            JsonElement jsonElement = parker.parse(reader);
+            Gson myGson = new Gson();
+
+            Type type = new TypeToken<ArrayList<Task>>(){}.getType();
+            taskList = myGson.fromJson(jsonElement,type);
+            String it = taskList.get(0).getDesc();
+
+            // System.out.println(losdias.get(0).getBody());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    static void serializeSimple(){
+        Gson myGson = new Gson();
+        try (FileWriter writer = new FileWriter("data.json")){
+            myGson.toJson(taskList,writer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
